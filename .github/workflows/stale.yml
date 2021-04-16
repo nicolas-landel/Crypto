@@ -1,0 +1,32 @@
+name: Update every 10 minutes - test
+
+on:
+  schedule:
+  - cron: "*/10 * * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner.
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9 #install the python needed
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: execute py script # run the run.py to get the latest data
+        run: |
+          python main.py
+      - name: setup git config
+        run: |
+         git config user.name ${{ secrets.USERNAME }}
+         git config user.email ${{ secrets.EMAIL }}
+      - name: commit changes
+        run: |
+         chmod +x ./scripts/commit.sh
+         ./scripts/commit.sh
+
