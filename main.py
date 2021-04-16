@@ -6,7 +6,8 @@
 #
 #   easy_install requests
 import os, sys
-import json, hmac, hashlib, time, requests
+import json, hmac, hashlib, time, requests, csv, datetime, time
+import pandas as pd
 from requests.auth import AuthBase
 from dotenv import load_dotenv
 
@@ -66,17 +67,12 @@ def init_currency_dic(account_data):
 
 currency_list = create_currency_list(account_data)
 currency_amount_dic = init_currency_dic(account_data)
-print(currency_list, currency_amount_dic)
-
-
-
 
 query = 'prices/DASH-EUR/buy'
 r = requests.get(api_url + query, auth=auth)
-print(r.json())
 
 def create_currency_value_dic(currency_list, currency_amount_dic):
-    data_dic = {}
+    data_dic = {'time': datetime.datetime.now().strftime('%H:%M %d-%m-%Y')}
 
     for i, cur in enumerate(currency_list):
         query = f'prices/{cur}-EUR/buy'
@@ -90,20 +86,20 @@ data_dic = create_currency_value_dic(currency_list, currency_amount_dic)
 
 print(data_dic)
 
+# df = pd.DataFrame(data=data_dic, index=[0])
+# df.to_csv("./data.csv", sep=',', index=False)
+
 def save_in_csv(data_dic):
+    '''Save the new data in the csv'''
     # directory = os.path.dirname(sys.argv[0])
-    print("DIRECTORy", os.path)
+    __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
     if not os.path.isfile('data.csv'):
         print(f"File path 'data.csv' does not exist. Exiting...")
         sys.exit()
 
-    with open('data.csv', 'r', encoding="utf-8") as file_data:
-        raw_data = file_data.read()
-    
-    print("RAW", raw_data)
-
-    return None
-
-
+    with open(os.path.join(__location__, 'data.csv'), 'a+', encoding="utf-8") as file_data:
+        csv_writer = csv.writer(file_data)
+        csv_writer.writerow(list(data_dic.values()))
 
 save_in_csv(data_dic)
+
