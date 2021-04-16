@@ -1,20 +1,8 @@
-# Requires python-requests. Install with pip:
-#
-#   pip install requests
-#
-# or, with easy-install:
-#
-#   easy_install requests
 import os, sys
 import json, hmac, hashlib, time, requests, csv, datetime, time
 import pandas as pd
 from requests.auth import AuthBase
 from dotenv import load_dotenv
-
-# Before implementation, set environmental variables with the names API_KEY and API_SECRET
-load_dotenv()
-API_KEY = os.getenv("key")
-API_SECRET = os.getenv("secret")
 
 # Create custom authentication for Coinbase API
 class CoinbaseWalletAuth(AuthBase):
@@ -38,16 +26,6 @@ class CoinbaseWalletAuth(AuthBase):
         })
         return request
 
-api_url = 'https://api.coinbase.com/v2/'
-auth = CoinbaseWalletAuth(API_KEY, API_SECRET)
-
-# query = 'users'
-# query = 'accounts'
-
-account_data = requests.get(api_url + 'accounts', auth=auth).json()
-
-
-# print(account_data['data'], type(account_data['data']), type(account_data['data'][0]))
 
 def create_currency_list(account_data):
     currency_list = []
@@ -65,13 +43,8 @@ def init_currency_dic(account_data):
     }
     return currency_data
 
-currency_list = create_currency_list(account_data)
-currency_amount_dic = init_currency_dic(account_data)
 
-query = 'prices/DASH-EUR/buy'
-r = requests.get(api_url + query, auth=auth)
-
-def create_currency_value_dic(currency_list, currency_amount_dic):
+def create_currency_value_dic(currency_list, currency_amount_dic, api_url, auth):
     data_dic = {'time': datetime.datetime.now().strftime('%H:%M %d-%m-%Y')}
 
     for i, cur in enumerate(currency_list):
@@ -82,12 +55,6 @@ def create_currency_value_dic(currency_list, currency_amount_dic):
     
     return data_dic
 
-data_dic = create_currency_value_dic(currency_list, currency_amount_dic)
-
-print(data_dic)
-
-# df = pd.DataFrame(data=data_dic, index=[0])
-# df.to_csv("./data.csv", sep=',', index=False)
 
 def save_in_csv(data_dic):
     '''Save the new data in the csv'''
@@ -101,5 +68,18 @@ def save_in_csv(data_dic):
         csv_writer = csv.writer(file_data)
         csv_writer.writerow(list(data_dic.values()))
 
-save_in_csv(data_dic)
 
+def run_pipeline():
+    load_dotenv()
+    API_KEY = os.getenv("key")
+    API_SECRET = os.getenv("secret")
+    api_url = 'https://api.coinbase.com/v2/'
+    auth = CoinbaseWalletAuth(API_KEY, API_SECRET)  # Config the connection to coinbase
+    account_data = requests.get(api_url + 'accounts', auth=auth).json()  # Fetch data from the account (amount of each currencies)
+    currency_list = create_currency_list(account_data)
+    currency_amount_dic = init_currency_dic(account_data)
+    data_dic = create_currency_value_dic(currency_list, currency_amount_dic, api_url, auth)  # Format the data into a dic, with currency tags as keys and amount (EUR) as values
+    save_in_csv(data_dic)
+
+if __name__ == '__main__':
+    run_pipeline()
