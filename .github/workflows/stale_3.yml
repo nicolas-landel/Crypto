@@ -1,4 +1,4 @@
-name: Update every 10 minutes - test
+name: Update every 3 hours
 
 on:
   push:
