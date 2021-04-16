@@ -1,4 +1,4 @@
-name: Update every 3 hours
+name: Update every 10 minutes - test
 
 on:
   schedule:
