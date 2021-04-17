@@ -27,14 +27,6 @@ class CoinbaseWalletAuth(AuthBase):
         return request
 
 
-def create_currency_list(account_data):
-    currency_list = []
-    
-    currency_list = [
-        currency_data['currency']['code'] for currency_data in account_data['data'] if float(currency_data['balance']['amount']) != 0
-    ]
-    return currency_list
-  
 def init_currency_dic(account_data):
     currency_data = {}
     
@@ -44,10 +36,10 @@ def init_currency_dic(account_data):
     return currency_data
 
 
-def create_currency_value_dic(currency_list, currency_amount_dic, api_url, auth):
+def create_currency_value_dic(currency_amount_dic, api_url, auth):
     data_dic = {'time': datetime.datetime.now().strftime('%H:%M %d-%m-%Y')}
 
-    for i, cur in enumerate(currency_list):
+    for i, cur in enumerate(list(currency_amount_dic.keys())):
         query = f'prices/{cur}-EUR/buy'
         request_val_price = requests.get(api_url + query, auth=auth)
         json_price = request_val_price.json()
@@ -76,9 +68,8 @@ def run_pipeline():
     api_url = 'https://api.coinbase.com/v2/'
     auth = CoinbaseWalletAuth(API_KEY, API_SECRET)  # Config the connection to coinbase
     account_data = requests.get(api_url + 'accounts', auth=auth).json()  # Fetch data from the account (amount of each currencies)
-    currency_list = create_currency_list(account_data)
     currency_amount_dic = init_currency_dic(account_data)
-    data_dic = create_currency_value_dic(currency_list, currency_amount_dic, api_url, auth)  # Format the data into a dic, with currency tags as keys and amount (EUR) as values
+    data_dic = create_currency_value_dic(currency_amount_dic, api_url, auth)  # Format the data into a dic, with currency tags as keys and amount (EUR) as values
     save_in_csv(data_dic)
 
 if __name__ == '__main__':
