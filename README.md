@@ -1,5 +1,7 @@
 # crypto
 
+## This projet is developed for a personal purpose
+
 Activate the virtualenv (windows):
 
 ``source venv/Scripts/activate``
