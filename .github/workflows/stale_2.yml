@@ -1,11 +1,11 @@
-name: Update every 3 hours
+name: Update every 2 hours
 
 on:
   push:
       branches:
         - master
   schedule:
-  - cron: "0 */3 * * *"
+  - cron: "0 */2 * * *"
 
 jobs:
   build:
