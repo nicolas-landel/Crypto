@@ -59,7 +59,7 @@ class ProcessData():
             json_price = request_val_price.json()
             price = round(float(json_price['data']['amount']) * float(self.currency_data.get(cur)), 2)
             # Remove if lower than 1 EUR, mainly for DAI
-            if price > 1:  
+            if price > 15:  
                 data_dic[cur] =  price
         
         return data_dic
