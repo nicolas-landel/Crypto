@@ -30,6 +30,26 @@ class CoinbaseWalletAuth(AuthBase):
 
 class ProcessData():
     def __init__(self, auth, api_url):
+        self.initial_amount = {
+            "DASH": 50,
+            "NKN": 50,
+            "ANKR": 50,
+            "KNC": 50,
+            "ADA": 50,
+            "MANA": 20,
+            "SKL": 32,
+            "MATIC": 75,
+            "XLM": 50,
+            "UNI": 100,
+            "LRC": 100,
+            "CVC": 100,
+            "ETC": 150,
+            "XTZ": 50,
+            "GRT": 90,
+            "ALGO": 100,
+            "BCH": 71,
+            "ETH": 80,
+        }
         self.auth = auth
         self.api_url = api_url
         self.account_data = self.parse_account_data()
@@ -45,22 +65,22 @@ class ProcessData():
 
     def init_currency_dic(self):
         currency_data = {}
-        currency_data = {
-            currency_data['currency']['code']: currency_data['balance']['amount']
-                for currency_data in self.account_data['data'] if float(currency_data['balance']['amount']) != 0
-        }
+        for i, cur in enumerate(list(self.initial_amount.keys())):
+            query = f'accounts/{cur}'
+            request_currency_amount = requests.get(self.api_url + query, auth=self.auth)
+            json_amount = request_currency_amount.json()
+            currency_data[cur] =  json_amount['data']['balance']['amount']
         return currency_data
-    
+
     def create_currency_value_dic(self):
         data_dic = {'time': datetime.datetime.now().strftime('%H:%M %d-%m-%Y')}
-        for i, cur in enumerate(list(self.currency_data.keys())):
+        for i, cur in enumerate(list(self.initial_amount.keys())):
             query = f'prices/{cur}-EUR/buy'
             request_val_price = requests.get(self.api_url + query, auth=self.auth)
             json_price = request_val_price.json()
-            price = round(float(json_price['data']['amount']) * float(self.currency_data.get(cur)), 2)
+            price = round(float(json_price['data']['amount']) * float(self.currency_data.get(cur)), 2) if cur in self.currency_data.keys() else None
             # Remove if lower than 1 EUR, mainly for DAI
-            if price > 15:  
-                data_dic[cur] =  price
+            data_dic[cur] =  price
         
         return data_dic
     
@@ -75,28 +95,6 @@ class ProcessData():
             csv_writer = csv.writer(file_data)
             csv_writer.writerow(list(self.data_dic.values()))
     
-
-
-original_values = {
-    "DASH": 50,
-    "NKN": 50,
-    "ANKR": 50,
-    "KNC": 50,
-    "ADA": 50,
-    "MANA": 20,
-    "SKL": 32,
-    "MATIC": 75,
-    "XLM": 50,
-    "UNI": 100,
-    "LRC": 100,
-    "CVC": 100,
-    "ETC": 150,
-    "XTZ": 50,
-    "GRT": 90,
-    "ALGO": 100,
-    "BCH": 71,
-}
-
 
 def run_pipeline():
     load_dotenv()
