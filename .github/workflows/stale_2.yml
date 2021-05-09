@@ -21,16 +21,21 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      - name: setup git config
+        run: |
+         git config user.name ${{ secrets.USERNAME }}
+         git config user.email ${{ secrets.EMAIL }}
+      - name: checkout to fetch_data branch
+        run: |
+         chmod +x ./scripts/swithc_branch.sh
+         ./scripts/swithc_branch.sh
       - name: execute py script # run the run.py to get the latest data
         run: |
           python main.py
         env: 
           key: ${{ secrets.KEY }}
           secret: ${{ secrets.SECRET }}
-      - name: setup git config
-        run: |
-         git config user.name ${{ secrets.USERNAME }}
-         git config user.email ${{ secrets.EMAIL }}
+      
       - name: commit changes
         run: |
          chmod +x ./scripts/commit.sh
