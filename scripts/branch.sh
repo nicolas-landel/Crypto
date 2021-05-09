@@ -26,13 +26,16 @@ if [[ "$BRANCH" == "main" ]]; then
 
 else 
 # Current branch is not main so it is fetch_data -> need to merge PR and create new one
-    current_branch = $(git rev-parse --abbrev-ref HEAD)
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
     echo "Current branch is not main, it is $current_branch"
     git fetch && git pull
+    git add .
+    git commit -m "Commit all remaning changes before merge"
+    git push origin $current_branch
     git checkout main
     git fetch && git pull
-    # git merge --no-ff $current_branch
-    # git branch -D $current_branch
+    git merge --no-ff $current_branch
+    git branch -D $current_branch
 
 
 fi
