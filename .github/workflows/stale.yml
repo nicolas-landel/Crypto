@@ -1,0 +1,25 @@
+name: Create new branch to fetch data
+
+on:
+  schedule:
+  - cron: "0 0 */7 * *"
+
+jobs:
+  stale:
+
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner.
+      - name: setup git config
+        run: |
+         git config user.name ${{ secrets.USERNAME }}
+         git config user.email ${{ secrets.EMAIL }}
+      - name: create merge fetch_data and create again the branch
+        run: |
+         chmod +x ./scripts/branch.sh
+         ./scripts/branch.sh
