@@ -36,7 +36,8 @@ else
     git fetch && git pull
     git merge --no-ff $current_branch
     git branch -D $current_branch
-
+    # Create again a new branch which will receive the updates of the data.csv
+    create_new_branch
 
 fi
 
