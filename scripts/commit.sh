@@ -1,5 +1,5 @@
 #!/bin/bash
 
 git add . 
-git commit -m "Updated Repository data"
-git push origin main
+git commit -m "Fetch data from API"
+git push origin
