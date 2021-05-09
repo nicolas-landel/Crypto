@@ -6,7 +6,7 @@ create_fetch_branch() {
 }
 
 create_new_pr() {
-# Not used yet as I want to do the PR manually first
+# Not used yet as I want to do the PR manually first and no need
     destination_branch=main
     # Retrieve repository URL
     repository_url="$(git remote get-url origin | sed -e 's/git@//' -e 's/.git//' -e 's/:/\//')"
