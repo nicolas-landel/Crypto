@@ -11,6 +11,7 @@ if [[ `git branch --list $branch_fetch` ]]; then
         git fetch && git pull
     fi
 else
+    echo "Else case, script branch.sh"
     chmod +x ./scripts/branch.sh
     ./scripts/branch.sh
 fi
