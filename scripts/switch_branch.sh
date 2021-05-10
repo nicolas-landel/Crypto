@@ -10,5 +10,6 @@ if [[ `git branch --list $branch_fetch` ]]; then
         git fetch && git pull
     fi
 else
+    chmod +x ./scripts/branch.sh
     ./scripts/branch.sh
 fi
