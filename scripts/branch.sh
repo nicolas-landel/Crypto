@@ -23,11 +23,13 @@ if [[ "$current_branch" == "main" ]]; then
 # Initialisation of the process
 # If branch main, ie not current PR so create one
     echo "Current branch is main"
-    if [ `git branch --list $branch_fetch` ]; then
+    if [[ `git branch --list $branch_fetch` ]]; then
+        
         echo "Branch name $branch_fetch already exists."
         git checkout $branch_fetch
         git fetch && git pull
     else
+        echo "Create fetch branch"
         create_fetch_branch
     fi
 
