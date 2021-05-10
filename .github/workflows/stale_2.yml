@@ -5,7 +5,7 @@ on:
       branches:
         - master
   schedule:
-  - cron: "10 */1 * * *"
+  - cron: "0 */2 * * *"
 
 jobs:
   build:
@@ -25,10 +25,14 @@ jobs:
         run: |
          git config user.name ${{ secrets.USERNAME }}
          git config user.email ${{ secrets.EMAIL }}
+#       - name: checkout to fetch_data branch
+#         run: |
+#          chmod +x ./scripts/switch_branch.sh
+#          ./scripts/switch_branch.sh
       - name: checkout to fetch_data branch
-        run: |
-         chmod +x ./scripts/switch_branch.sh
-         ./scripts/switch_branch.sh
+        uses: actions/checkout@v2
+        with:
+          ref: fetch_data
       - name: execute py script # run the run.py to get the latest data
         run: |
           python main.py
